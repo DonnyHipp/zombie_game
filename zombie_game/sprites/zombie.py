@@ -1,20 +1,33 @@
 import arcade
 import settings
+from entity import Entity
 
 
-class Player(arcade.Sprite):
+class Player(Entity):
     
     
     def __init__(self,center_x,center_y,scale,en_type):
 
         super().__init__()
         # self.texture = arcade.load_texture("../resources/player.png")
+
+        self.main_path = "../resources/Zombie"
+        self.damage = 25
+        self.center_x = center_x
+        self.center_y = center_y
+        self.scale = scale
         self.en_type = en_type
-        self.mv_speed = None
-        self.force = None
-        self.wait = None
-        self.texture = None
+
+        self.shoot_speed = None
+        self.bulbreak = None
+
         self.__detect_type()
+
+        self._set_idle()
+        
+        self.walk_textures = self._get_textures()
+
+        
         
         self.health = 100
         self.mv_speed = 2
@@ -33,12 +46,12 @@ class Player(arcade.Sprite):
             self.mv_speed = 1
             self.force = 5
             self.wait = 10
-            self.texture = arcade.load_texture("../resources/player.png")
+            self.main_path = f"{self.main_path}/weak"
         elif self.en_type == "strong":
             self.mv_speed = 3
             self.force = 10
             self.wait = 5
-            self.texture = arcade.load_texture("../resources/player.png")
+            self.main_path = f"{self.main_path}/weak"
         else:
             self.mv_speed = 2
             self.force = 7
