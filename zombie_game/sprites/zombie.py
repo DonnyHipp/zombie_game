@@ -1,9 +1,9 @@
 import arcade
 import settings
-from entity import Entity
+from .entity import Entity
 
 
-class Player(Entity):
+class Zombie(Entity):
     
     
     def __init__(self,center_x,center_y,scale,en_type):
@@ -12,37 +12,23 @@ class Player(Entity):
         # self.texture = arcade.load_texture("../resources/player.png")
 
         self.main_path = "../resources/Zombie"
-        self.damage = 25
+        self.force = 25
         self.center_x = center_x
         self.center_y = center_y
         self.scale = scale
         self.en_type = en_type
 
-        self.shoot_speed = None
-        self.bulbreak = None
-
         self.__detect_type()
-
-        self._set_idle()
-        
+        self.idle_texture = self._set_idle()
+        self.texture = self.idle_texture[0]
         self.walk_textures = self._get_textures()
 
-        
-        
-        self.health = 100
-        self.mv_speed = 2
-        self.bullet_damage = 25
-        self.center_x = center_x
-        self.center_y = center_y
-        self.scale = scale
 
-        self.shoot_speed = None
-        self.bulbreak = None
-
-
+        self.set_hit_box(self.texture.hit_box_points)
 
     def __detect_type(self):
         if self.en_type == "weak":
+            self.health = 100
             self.mv_speed = 1
             self.force = 5
             self.wait = 10
@@ -56,7 +42,7 @@ class Player(Entity):
             self.mv_speed = 2
             self.force = 7
             self.wait = 7
-            self.texture = arcade.load_texture("../resources/player.png")
+            self.texture = arcade.load_texture(f"{self.main_path}/weak")
         # Handles the player textures.
        
 

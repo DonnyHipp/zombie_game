@@ -6,6 +6,7 @@ import asyncio
 import arcade
 import settings
 from sprites.player import Player
+from sprites.zombie import Zombie
 import threading
 import pytmx
 import time
@@ -41,16 +42,30 @@ class MyGame(arcade.Window):
         self.shoot_pressed = False
         self.can_shoot = False
         self.shoot_timer = 0
+        self.h_box = None
         arcade.set_background_color(arcade.color.BABY_BLUE_EYES)
-
+        self.gui_camera = None
+        self.zombie =None
+        self.poison_damage = 5
+        
+        
     def setup(self):
 
         # cцена и карта
         tmx_map = "../resources/map/final_map.tmx"
-
+        
         layer_options = {
             "Walls": {
-                "use_spatial_hash": False,
+                "use_spatial_hash": True,
+            },
+            "death": {
+                "use_spatial_hash": True,
+            },
+            "spawn": {
+                "use_spatial_hash": True,
+            },
+            "doors": {
+                "use_spatial_hash": True,
             },
         }
         self.tile_map = arcade.tilemap.TileMap(map_file=tmx_map, scaling=1,layer_options=layer_options)
@@ -59,15 +74,20 @@ class MyGame(arcade.Window):
         # arcade.Scene.from_tilemap(map_object=tmx_map, layer="Tile Layer 1", scaling=1.0)
 
         # спрайт игрока
-        self.player = Player(200,200,0.1,"AR")
+        self.player = Player(300,300,1,"AR")
+        
         self.scene.add_sprite("Player", self.player)
-
+        
         # спрайт противников
+        self.zombie = Zombie(300,300,1.3,"weak")
+        self.scene.add_sprite("Zombie", self.zombie)
+        
 
 
         # игровая камера
         self.camera = arcade.Camera(settings.SCREEN_WIDTH, settings.SCREEN_HEIGHT)
-        
+        self.gui_camera = arcade.Camera(self.width, self.height)
+
         
 
         # ядро физики
@@ -82,12 +102,17 @@ class MyGame(arcade.Window):
         self.can_shoot = True
         self.shoot_timer = 0
         self.scene.add_sprite_list("Bullet")
+        
 
         # добавляем коллизии
         
         # сцена
         
-
+        # смертельная зона
+        self.check_time = 6 
+        self.scene.add_sprite_list("damage")
+        self.dmg_text = ""
+        self.dmg = None
 
     def on_draw(self):
         """
@@ -95,18 +120,16 @@ class MyGame(arcade.Window):
         """
         self.clear()
 
+        
         self.camera.use()
-
-        # self.gui_camera.use()
         self.scene.draw()
+        # self.gui_camera.use()
+        self.gui_camera.use()
 
-        output = f"Score: {1}"
-        arcade.draw_text(output, 10, 20, arcade.color.BLACK, 14)
-
-        self.physics_engine.update()
-
-
-
+        
+        health = f"Health: {self.player.health}"
+        arcade.draw_text(health, 10, 20, arcade.color.RED, 14)
+        arcade.draw_text(self.dmg_text, 20, 30, arcade.color.RED, 14)
 
     def center_camera_to_player(self):
         screen_center_x = self.player.center_x - (self.camera.viewport_width / 2)
@@ -131,8 +154,9 @@ class MyGame(arcade.Window):
         need it.
         """
 
-
+        self.physics_engine.update()
         
+
         if self.shoot_pressed:
             if self.can_shoot:
                 self._make_bullet()
@@ -146,12 +170,56 @@ class MyGame(arcade.Window):
         for bullet in self.scene["Bullet"]:
             self._check_bullet_coll(bullet)
 
+        if self.zombie.center_x < self.player.center_x-(self.player.width/2):
+            self.zombie.change_x = self.zombie.mv_speed
+        elif self.zombie.center_x > self.player.center_x+(self.player.width/2):
+            self.zombie.change_x = -self.zombie.mv_speed
+        else:
+            self.zombie.change_x = 0
 
-        # physic update
-        self.physics_engine.update()
-        self.center_camera_to_player()
-        self.scene.update()
+        if self.zombie.center_y < self.player.center_y-(self.player.height/2):
+            self.zombie.change_y = self.zombie.mv_speed
+        elif self.zombie.center_y > self.player.center_y+(self.player.height/2):
+            self.zombie.change_y = -self.zombie.mv_speed
+        else:
+            self.zombie.change_y = 0   
+
+        check = arcade.check_for_collision_with_list(
+            self.player, self.scene["death"]
+        )
+        
+        if check:
             
+            if self.check_time >5:
+                self.player.health -=self.poison_damage
+                self.check_time = 0
+                self.dmg = True
+
+            else:
+                self.check_time += delta_time
+        else:
+            self.dmg = False
+            self.check_time = 6
+
+        
+
+        if self.dmg and self.dmg_text != "Damage":
+            self.dmg_text = "!Damage!"
+        else:
+            self.dmg_text = ""
+        # physic update
+
+        self.center_camera_to_player()
+
+        self.scene.update()
+        self.scene.update_animation(
+            delta_time, [ "Player"]
+        )
+        self.scene.update_animation(
+            delta_time, [ "Zombie"]
+        )
+
+        
 
     def _check_bullet_coll(self,bullet):
         hit_list = arcade.check_for_collision_with_lists(
@@ -169,7 +237,15 @@ class MyGame(arcade.Window):
         bullet = arcade.Sprite("../resources/bullet.png", 0.2)
         bullet.center_x = self.player.center_x
         bullet.center_y = self.player.center_y
-        bullet.change_y = self.player.shoot_speed
+        if self.player.character_face_direction == self.player.front_direction:
+            bullet.change_y = self.player.shoot_speed
+        elif self.player.character_face_direction == self.player.back_direction:
+            bullet.change_y = -self.player.shoot_speed
+        elif self.player.character_face_direction == self.player.left_direction:
+            bullet.change_x = -self.player.shoot_speed
+        elif self.player.character_face_direction == self.player.right_direction:
+            bullet.change_x = self.player.shoot_speed
+
         self.scene.add_sprite("Bullet",bullet)
         self.can_shoot = False
         

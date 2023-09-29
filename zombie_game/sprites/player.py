@@ -1,6 +1,6 @@
 import arcade
 import settings
-from entity import Entity
+from .entity import Entity
 
 
 
@@ -10,7 +10,7 @@ class Player(Entity):
     def __init__(self,center_x,center_y,scale,weapon):
 
         super().__init__()
-        self.main_path = "../resources/Player"
+        self.main_path = "../resources/Player/player"
         self.damage = 25
         self.center_x = center_x
         self.center_y = center_y
@@ -22,9 +22,10 @@ class Player(Entity):
         self.bulbreak = None
 
         self.change_weapon(weapon)
-        self._set_idle()
-        
+        self.idle_texture = self._set_idle()
+        self.texture = self.idle_texture[0]
         self.walk_textures = self._get_textures()
+        
 
 
     def change_weapon(self,weapon):
