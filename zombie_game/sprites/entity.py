@@ -21,7 +21,7 @@ class Entity(arcade.Sprite):
         self.update_per_frame = 6
 
         self.character_face_direction = self.front_direction
-
+        
     def _set_idle(self):
         # print(f"{self.main_path}_idle_{i}" for i in range(4))
         idle_texture = self.load_idle()

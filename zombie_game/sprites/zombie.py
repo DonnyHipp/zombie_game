@@ -1,7 +1,7 @@
 import arcade
 import settings
 from .entity import Entity
-
+import random
 
 class Zombie(Entity):
     
@@ -29,7 +29,7 @@ class Zombie(Entity):
     def __detect_type(self):
         if self.en_type == "weak":
             self.health = 100
-            self.mv_speed = 1
+            self.mv_speed = random.random() 
             self.force = 5
             self.wait = 10
             self.main_path = f"{self.main_path}/weak"
@@ -43,32 +43,45 @@ class Zombie(Entity):
             self.force = 7
             self.wait = 7
             self.texture = arcade.load_texture(f"{self.main_path}/weak")
-        # Handles the player textures.
-       
+        
 
-        # self.idle_sprite = load_texture_pair("Sprites/player.png")
+    def move_to_player(self,player):
+        if self.center_x < player.center_x-(player.width/2):
+            self.change_x = self.mv_speed
+        elif self.center_x > player.center_x+(player.width/2):
+            self.change_x = -self.mv_speed
+        else:
+            self.change_x = 0
 
-        # self.walk_textures = []
-        # for i in range(1,2,1):
-        #     texture = load_texture_pair("Sprites/player_move_"+str(i)+".png")
-        #     self.walk_textures.append(texture)
+        if self.center_y < player.center_y-(player.height/2):
+            self.change_y = self.mv_speed
+        elif self.center_y > player.center_y+(player.height/2):
+            self.change_y = -self.mv_speed
+        else:
+            self.change_y = 0
 
-    # def update_animation(self, delta_time: float=1/60):
-    #     """ Handles possible animations""" 
 
-    #     if self.change_x < 0 and self.character_face_direction == self.face_right:
-    #         self.character_face_direction = self.face_left
-    #     elif self.change_x > 0 and self.character_face_direction == self.face_left:
-    #         self.character_face_direction = self.face_right
-    #     if self.change_x == 0 and self.change_y == 0:
-    #         self.texture = self.idle_sprite[0]
-    #         return
-    #     if self.current_texture > 2 * self.updates_per_frame:
-    #         self.current_texture = 0
-    #     self.texture = self.walk_textures[self.current_texture // self.updates_per_frame][self.character_face_direction]
+# class Wave():
+#     WAVE_LIST = []
 
-    # def take_damage(self,damage_taken):
-    #     """ Handles damage taken and health point reduction. """
+#     def __init__(self,current_wave,points,enemy) -> None:
+#         self.points = points
+#         self.wave_num = self._set_wave(num)
 
-    #     self.damage_taken = damage_taken
-    #     self.health -= self.damage_taken
+#     def _set_wave(self,wave):
+#         self.wave = wave
+#         self.change_wave()
+
+#     def _set_enemy_amount(self,wave):
+#         self.enemy_amount = get_enemy_amount
+        
+    
+#     def __get_enemy_amount():
+#         return sum([i["weak"] for _, i in  self.WAVE_LIST.items()])
+
+
+#     def __change_wave(self):
+#         pass
+
+
+    

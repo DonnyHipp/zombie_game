@@ -25,7 +25,7 @@ class Player(Entity):
         self.idle_texture = self._set_idle()
         self.texture = self.idle_texture[0]
         self.walk_textures = self._get_textures()
-        
+        self.set_hit_box(self.texture.hit_box_points)
 
 
     def change_weapon(self,weapon):

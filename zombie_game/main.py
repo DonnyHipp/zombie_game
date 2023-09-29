@@ -10,6 +10,7 @@ from sprites.zombie import Zombie
 import threading
 import pytmx
 import time
+import random
 # SCREEN_WIDTH = 800
 # SCREEN_HEIGHT = 600
 # SCREEN_TITLE = "Starting Template"
@@ -47,6 +48,8 @@ class MyGame(arcade.Window):
         self.gui_camera = None
         self.zombie =None
         self.poison_damage = 5
+        self.current_wave = settings.WAVE_LIST[1]
+        self.spawn_points = None
         
         
     def setup(self):
@@ -61,7 +64,13 @@ class MyGame(arcade.Window):
             "death": {
                 "use_spatial_hash": True,
             },
-            "spawn": {
+            "spawn1": {
+                "use_spatial_hash": True,
+            },
+            "spawn2": {
+                "use_spatial_hash": True,
+            },
+            "spawn3": {
                 "use_spatial_hash": True,
             },
             "doors": {
@@ -71,7 +80,6 @@ class MyGame(arcade.Window):
         self.tile_map = arcade.tilemap.TileMap(map_file=tmx_map, scaling=1,layer_options=layer_options)
         
         self.scene = arcade.Scene.from_tilemap(self.tile_map)
-        # arcade.Scene.from_tilemap(map_object=tmx_map, layer="Tile Layer 1", scaling=1.0)
 
         # спрайт игрока
         self.player = Player(300,300,1,"AR")
@@ -79,8 +87,17 @@ class MyGame(arcade.Window):
         self.scene.add_sprite("Player", self.player)
         
         # спрайт противников
-        self.zombie = Zombie(300,300,1.3,"weak")
-        self.scene.add_sprite("Zombie", self.zombie)
+        enemy_amount = settings.WAVE_LIST[1]["weak"]
+        # for enemy in range(enemy_amount):
+        self.spawn_points = self.scene.get_sprite_list("spawn1")
+
+        for enemy in range(enemy_amount):
+            start_zombie_point = self.spawn_points[round(random.random()*len(self.spawn_points)-1)]
+            zombie = Zombie(start_zombie_point.center_x,start_zombie_point.center_y,1.3,"weak")
+            self.scene.add_sprite("Zombie",zombie)
+            
+        
+        # self.scene.add_sprite_list("Zombie", self.spawn1_sprite)
         
 
 
@@ -112,7 +129,6 @@ class MyGame(arcade.Window):
         self.check_time = 6 
         self.scene.add_sprite_list("damage")
         self.dmg_text = ""
-        self.dmg = None
 
     def on_draw(self):
         """
@@ -153,7 +169,7 @@ class MyGame(arcade.Window):
         Normally, you'll call update() on the sprite lists that
         need it.
         """
-
+        
         self.physics_engine.update()
         
 
@@ -170,19 +186,10 @@ class MyGame(arcade.Window):
         for bullet in self.scene["Bullet"]:
             self._check_bullet_coll(bullet)
 
-        if self.zombie.center_x < self.player.center_x-(self.player.width/2):
-            self.zombie.change_x = self.zombie.mv_speed
-        elif self.zombie.center_x > self.player.center_x+(self.player.width/2):
-            self.zombie.change_x = -self.zombie.mv_speed
-        else:
-            self.zombie.change_x = 0
-
-        if self.zombie.center_y < self.player.center_y-(self.player.height/2):
-            self.zombie.change_y = self.zombie.mv_speed
-        elif self.zombie.center_y > self.player.center_y+(self.player.height/2):
-            self.zombie.change_y = -self.zombie.mv_speed
-        else:
-            self.zombie.change_y = 0   
+        for zombie in self.scene["Zombie"]:
+            zombie.move_to_player(self.player)
+            self._check_zombie_player_coll(zombie,1)
+            self._check_zombie_player_coll(zombie,1)
 
         check = arcade.check_for_collision_with_list(
             self.player, self.scene["death"]
@@ -190,59 +197,39 @@ class MyGame(arcade.Window):
         
         if check:
             
+
             if self.check_time >5:
                 self.player.health -=self.poison_damage
                 self.check_time = 0
-                self.dmg = True
-
+                if not self.dmg_text:
+                    self.dmg_text = "!Damage!"
             else:
                 self.check_time += delta_time
         else:
-            self.dmg = False
+            self.dmg_text = ""
             self.check_time = 6
 
-        
-
-        if self.dmg and self.dmg_text != "Damage":
-            self.dmg_text = "!Damage!"
-        else:
-            self.dmg_text = ""
-        # physic update
 
         self.center_camera_to_player()
 
         self.scene.update()
         self.scene.update_animation(
-            delta_time, [ "Player"]
+            delta_time, [ "Player","Zombie"]
         )
-        self.scene.update_animation(
-            delta_time, [ "Zombie"]
-        )
-
-        
-
-    def _check_bullet_coll(self,bullet):
-        hit_list = arcade.check_for_collision_with_lists(
-                bullet,
-                [
-                    self.scene["Walls"],
-
-                ],
-            )
-        if hit_list:
-            bullet.remove_from_sprite_lists()
 
 
     def _make_bullet(self):
         bullet = arcade.Sprite("../resources/bullet.png", 0.2)
         bullet.center_x = self.player.center_x
         bullet.center_y = self.player.center_y
+
         if self.player.character_face_direction == self.player.front_direction:
             bullet.change_y = self.player.shoot_speed
         elif self.player.character_face_direction == self.player.back_direction:
             bullet.change_y = -self.player.shoot_speed
         elif self.player.character_face_direction == self.player.left_direction:
             bullet.change_x = -self.player.shoot_speed
+            bullet.change_angle = 90
         elif self.player.character_face_direction == self.player.right_direction:
             bullet.change_x = self.player.shoot_speed
 
@@ -301,7 +288,23 @@ class MyGame(arcade.Window):
         Called when a user releases a mouse button.
         """
         pass
+    
+    def _check_zombie_player_coll(self,zombie,check):
+        # if check >5:
+        #     self.player.health
+        pass
 
+
+    def _check_bullet_coll(self,bullet):
+        hit_list = arcade.check_for_collision_with_lists(
+                bullet,
+                [
+                    self.scene["Walls"],
+
+                ],
+            )
+        if hit_list:
+            bullet.remove_from_sprite_lists()
 
 def main():
     """ Main method """

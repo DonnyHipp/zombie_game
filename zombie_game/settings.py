@@ -22,5 +22,19 @@ WEAPON_LIST = {
         },
 
     }
+WAVE_LIST= {
+        1: {
+            "weak": 9,
+            "strong":1
+        },
+         3: {
+            "weak": 12,
+            "strong":8
+        },
+         3: {
+            "weak": 20,
+            "strong":10
+        },
+        
 
-WAVE1 = 20
+    }
