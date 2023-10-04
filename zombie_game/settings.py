@@ -17,24 +17,26 @@ GRAVITY = 0
 
 WEAPON_LIST = {
         "AR": {
-            "speed": 30,
-            "bullet_break":4
+            "speed": 5,
+            "bullet_break":8
         },
 
     }
 WAVE_LIST= {
         1: {
-            "weak": 9,
-            "strong":1
+            "weak": 8,
+            "strong":1,
+            "spawn" : "spawn1"
         },
-         3: {
+        3: {
             "weak": 12,
-            "strong":8
+            "strong":8,
+            "spawn" : "spawn2"
         },
-         3: {
-            "weak": 20,
-            "strong":10
-        },
+        #  3: {
+        #     "weak": 20,
+        #     "strong":10
+        # },
         
 
     }

@@ -12,7 +12,7 @@ class Zombie(Entity):
         # self.texture = arcade.load_texture("../resources/player.png")
 
         self.main_path = "../resources/Zombie"
-        self.force = 25
+        self.damage = 25
         self.center_x = center_x
         self.center_y = center_y
         self.scale = scale
@@ -29,18 +29,18 @@ class Zombie(Entity):
     def __detect_type(self):
         if self.en_type == "weak":
             self.health = 100
-            self.mv_speed = random.random() 
-            self.force = 5
+            self.mv_speed = random.uniform(0.4,1.1)
+            self.damage = 5
             self.wait = 10
             self.main_path = f"{self.main_path}/weak"
         elif self.en_type == "strong":
             self.mv_speed = 3
-            self.force = 10
+            self.damage = 10
             self.wait = 5
             self.main_path = f"{self.main_path}/weak"
         else:
             self.mv_speed = 2
-            self.force = 7
+            self.damage = 7
             self.wait = 7
             self.texture = arcade.load_texture(f"{self.main_path}/weak")
         

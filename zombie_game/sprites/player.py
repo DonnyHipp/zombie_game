@@ -11,7 +11,7 @@ class Player(Entity):
 
         super().__init__()
         self.main_path = "../resources/Player/player"
-        self.damage = 25
+        self.damage = 80
         self.center_x = center_x
         self.center_y = center_y
         self.scale = scale

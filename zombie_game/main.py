@@ -48,10 +48,17 @@ class MyGame(arcade.Window):
         self.gui_camera = None
         self.zombie =None
         self.poison_damage = 5
-        self.current_wave = settings.WAVE_LIST[1]
+
+        self.current_wave = 1
+        self.enemy_amount = None
         self.spawn_points = None
+        self.zombie_is_spawn = True
+        self.check_spawn_time = 10
+        self.check_wave_time = 20
+        self.check_damage_time_zombie =6
         
-        
+
+
     def setup(self):
 
         # cцена и карта
@@ -73,7 +80,7 @@ class MyGame(arcade.Window):
             "spawn3": {
                 "use_spatial_hash": True,
             },
-            "doors": {
+            "Doors": {
                 "use_spatial_hash": True,
             },
         }
@@ -85,20 +92,12 @@ class MyGame(arcade.Window):
         self.player = Player(300,300,1,"AR")
         
         self.scene.add_sprite("Player", self.player)
-        
-        # спрайт противников
-        enemy_amount = settings.WAVE_LIST[1]["weak"]
-        # for enemy in range(enemy_amount):
-        self.spawn_points = self.scene.get_sprite_list("spawn1")
 
-        for enemy in range(enemy_amount):
-            start_zombie_point = self.spawn_points[round(random.random()*len(self.spawn_points)-1)]
-            zombie = Zombie(start_zombie_point.center_x,start_zombie_point.center_y,1.3,"weak")
-            self.scene.add_sprite("Zombie",zombie)
-            
-        
-        # self.scene.add_sprite_list("Zombie", self.spawn1_sprite)
-        
+
+        # спрайт противников
+        self.enemy_amount = settings.WAVE_LIST[self.current_wave]["weak"]
+        self.spawn_points = self.scene.get_sprite_list(settings.WAVE_LIST[self.current_wave]["spawn"])
+        self._zombie_spawn()
 
 
         # игровая камера
@@ -112,13 +111,13 @@ class MyGame(arcade.Window):
             arcade.set_background_color(self.tile_map.background_color)
 
         self.physics_engine = arcade.PhysicsEnginePlatformer(
-            self.player, gravity_constant=0, walls=self.scene["Walls"]
+            self.player, gravity_constant=0, walls=self.scene["Walls"],
         )
 
         # оружие
         self.can_shoot = True
         self.shoot_timer = 0
-        self.scene.add_sprite_list("Bullet")
+        self.scene.add_sprite_list("Bullet",)
         
 
         # добавляем коллизии
@@ -129,6 +128,7 @@ class MyGame(arcade.Window):
         self.check_time = 6 
         self.scene.add_sprite_list("damage")
         self.dmg_text = ""
+        self.dmg_text_player = ""
 
     def on_draw(self):
         """
@@ -145,7 +145,8 @@ class MyGame(arcade.Window):
         
         health = f"Health: {self.player.health}"
         arcade.draw_text(health, 10, 20, arcade.color.RED, 14)
-        arcade.draw_text(self.dmg_text, 20, 30, arcade.color.RED, 14)
+        arcade.draw_text(self.dmg_text, 660, 60, arcade.color.RED, 30)
+        arcade.draw_text(self.dmg_text_player, 660, 100, arcade.color.RED, 30)
 
     def center_camera_to_player(self):
         screen_center_x = self.player.center_x - (self.camera.viewport_width / 2)
@@ -163,7 +164,7 @@ class MyGame(arcade.Window):
         self.camera.move_to(player_centered,speed=0.1)
 
         
-    def on_update(self, delta_time):
+    def on_update(self, delta_time:float):
         """
         All the logic to move, and the game logic goes here.
         Normally, you'll call update() on the sprite lists that
@@ -171,7 +172,7 @@ class MyGame(arcade.Window):
         """
         
         self.physics_engine.update()
-        
+
 
         if self.shoot_pressed:
             if self.can_shoot:
@@ -186,18 +187,39 @@ class MyGame(arcade.Window):
         for bullet in self.scene["Bullet"]:
             self._check_bullet_coll(bullet)
 
-        for zombie in self.scene["Zombie"]:
-            zombie.move_to_player(self.player)
-            self._check_zombie_player_coll(zombie,1)
-            self._check_zombie_player_coll(zombie,1)
 
+
+        for zombie in self.scene["Zombie"]:
+            self._check_zombie_wall_coll(zombie)
+            zombie.move_to_player(self.player)
+            self._check_zombie_bullet_coll(zombie,self.player.damage)
+            check = arcade.check_for_collision_with_list(zombie, self.scene["Player"])
+            if check:
+                if self.check_damage_time_zombie >10:
+                    self.player.health -=zombie.damage
+                    self.check_damage_time_zombie = 0
+                    if not self.dmg_text_player:
+                        self.dmg_text_player = "!Damage!"
+                else:
+                    self.check_damage_time_zombie += delta_time
+            else:
+                self.dmg_text_player = ""
+                self.check_damage_time_zombie = 10
+            
+            if zombie.health <=0:
+                self.player.money += 100
+                print(self.player.money)
+                zombie.remove_from_sprite_lists()
+        
+
+
+        #смертельная зоны чек
         check = arcade.check_for_collision_with_list(
             self.player, self.scene["death"]
         )
-        
-        if check:
-            
 
+
+        if check:
             if self.check_time >5:
                 self.player.health -=self.poison_damage
                 self.check_time = 0
@@ -209,6 +231,35 @@ class MyGame(arcade.Window):
             self.dmg_text = ""
             self.check_time = 6
 
+
+        # переключение волн
+        if self.enemy_amount == 0 and len(self.scene["Zombie"])<=0:
+            new_wave = self.current_wave + 1
+            self.current_wave = new_wave if settings.WAVE_LIST.get(4) else 0
+            if self.current_wave == 0:
+                arcade.exit()
+                return
+            self.enemy_amount = settings.WAVE_LIST[self.current_wave]["weak"]
+            self.spawn_points = settings.WAVE_LIST[self.current_wave]["spawn"]
+        else:
+            if self.check_spawn_time >= 10:
+                self.enemy_amount -=1
+                self._zombie_spawn()
+                self.check_spawn_time =0
+            else:
+                self.check_spawn_time += delta_time
+
+
+
+        dor_check = arcade.check_for_collision_with_list(self.player,self.scene["Doors"])
+        if dor_check:
+            print(dor_check)
+            if self.player.money >=100:
+                self.player.money -= 100
+                self.player.center_y += 60
+            else:
+                self.player.center_y -= 10
+                self.player.change_y = 0
 
         self.center_camera_to_player()
 
@@ -271,28 +322,28 @@ class MyGame(arcade.Window):
         if key == arcade.key.Q:
             self.shoot_pressed = False
 
-    def on_mouse_motion(self, x, y, delta_x, delta_y):
-        """
-        Called whenever the mouse moves.
-        """
-        pass
-    
-    def on_mouse_press(self, x, y, button, key_modifiers):
-        """
-        Called when the user presses a mouse button.
-        """
-        pass
 
-    def on_mouse_release(self, x, y, button, key_modifiers):
-        """
-        Called when a user releases a mouse button.
-        """
-        pass
+    def _check_zombie_wall_coll(self,zombie):
+        check = arcade.check_for_collision_with_list(
+            zombie, self.scene["Walls"]
+        )
+        if check:
+            if zombie.change_x > 0:
+                pass
     
-    def _check_zombie_player_coll(self,zombie,check):
-        # if check >5:
-        #     self.player.health
-        pass
+    
+    def _check_zombie_bullet_coll(self,zombie,damage):
+        # hit_list = arcade.check_for_collision_with_lists(zombie,self.scene["Bullet"],method=0)
+        hit_list = None
+        if hit_list:
+            zombie.health -= damage
+
+
+    def _zombie_spawn(self,first=None):
+        start_zombie_point = self.spawn_points[round(random.randint(0,len(self.spawn_points)-1))]
+        zombie = Zombie(start_zombie_point.center_x,start_zombie_point.center_y,1.3,"weak")
+        self.scene.add_sprite("Zombie",zombie)
+        
 
 
     def _check_bullet_coll(self,bullet):
@@ -300,10 +351,15 @@ class MyGame(arcade.Window):
                 bullet,
                 [
                     self.scene["Walls"],
+                    self.scene["Zombie"]
 
                 ],
             )
+        
         if hit_list:
+            for hit in hit_list:
+                if type(hit) == Zombie:
+                    hit.health -= self.player.damage
             bullet.remove_from_sprite_lists()
 
 def main():
