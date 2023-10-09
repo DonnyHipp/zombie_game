@@ -11,11 +11,11 @@ class Player(Entity):
 
         super().__init__()
         self.main_path = "../resources/Player/player"
-        self.damage = 80
+        self.damage = 3
         self.center_x = center_x
         self.center_y = center_y
         self.scale = scale
-        self.money = 10
+        self.money = 20
         self.weapon = weapon
 
         self.shoot_speed = None

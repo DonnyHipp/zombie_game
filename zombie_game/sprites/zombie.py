@@ -30,7 +30,7 @@ class Zombie(Entity):
         if self.en_type == "weak":
             self.health = 100
             self.mv_speed = random.uniform(0.4,1.1)
-            self.damage = 5
+            self.damage = 7
             self.wait = 10
             self.main_path = f"{self.main_path}/weak"
         elif self.en_type == "strong":
