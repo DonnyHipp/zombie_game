@@ -297,10 +297,12 @@ class GameView(arcade.View):
 
         # у игрока кончилось здоровье
         if self.player.health <=0:
-            # game_over = GameOverView("lose")
-            # self.window.show_view(game_over)
+            game_over = GameOverView("lose")
+            self.window.show_view(game_over)
             pass
-        # переключение волн
+
+
+        # переключение волн и спавн
         if self.enemy_amount == 0:
             new_wave = self.current_wave + 1
             self.current_wave = new_wave if settings.WAVE_LIST.get(new_wave) else 0
