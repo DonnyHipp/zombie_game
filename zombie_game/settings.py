@@ -11,6 +11,10 @@ COIN_SCALING = 0.5
 SPRITE_PIXEL_SIZE = 128
 GRID_PIXEL_SIZE = SPRITE_PIXEL_SIZE * TILE_SCALING
 
+PLAYER_DAMAGE = 6
+
+END_MONEY = 200
+POINTS = 10
 GRAVITY = 0
 # PLAYER_JUMP_SPEED = 20
 
@@ -24,12 +28,12 @@ WEAPON_LIST = {
     }
 WAVE_LIST= {
         1: {
-            "weak": 20,
+            "weak": 2,
             "strong":1,
             "spawn" : "spawn1"
         },
-        3: {
-            "weak": 12,
+        2: {
+            "weak": 4,
             "strong":8,
             "spawn" : "spawn2"
         },

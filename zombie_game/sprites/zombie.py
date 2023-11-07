@@ -1,7 +1,9 @@
+import os
 import arcade
 import settings
 from .entity import Entity
 import random
+
 
 class Zombie(Entity):
     
@@ -11,7 +13,9 @@ class Zombie(Entity):
         super().__init__()
         # self.texture = arcade.load_texture("../resources/player.png")
 
-        self.main_path = "../resources/Zombie"
+        base_dir = os.path.dirname(os.path.abspath(os.getcwd()))
+        # self.main_path = "../resources/Zombie"
+        self.main_path = os.path.join(base_dir,"resources","Zombie","")
         self.damage = 25
         self.center_x = center_x
         self.center_y = center_y
@@ -28,21 +32,25 @@ class Zombie(Entity):
 
     def __detect_type(self):
         if self.en_type == "weak":
-            self.health = 100
+            self.health = 70
             self.mv_speed = random.uniform(0.4,1.1)
             self.damage = 7
             self.wait = 10
-            self.main_path = f"{self.main_path}/weak"
+            self.main_path = os.path.join(self.main_path,"weak")
+            # self.texture = arcade.load_texture(dr)
         elif self.en_type == "strong":
             self.mv_speed = 3
             self.damage = 10
             self.wait = 5
-            self.main_path = f"{self.main_path}/weak"
+            self.main_path = os.path.join(self.main_path,"weak")
+            # self.texture = arcade.load_texture(dr)
         else:
             self.mv_speed = 2
             self.damage = 7
             self.wait = 7
-            self.texture = arcade.load_texture(f"{self.main_path}/weak")
+            self.main_path = os.path.join(self.main_path,"weak")
+            # self.texture = arcade.load_texture(dr)
+            # self.texture = arcade.load_texture(f"{self.main_path}/weak")
         
 
     def move_to_player(self,player):

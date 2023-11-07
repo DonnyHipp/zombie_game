@@ -2,7 +2,8 @@
 Starting Template
 
 """
-import asyncio
+
+import os
 import arcade
 from arcade.application import Window
 import settings
@@ -46,6 +47,7 @@ class MainMenu(arcade.View):
 
     def on_mouse_press(self, _x, _y, _button, _modifiers):
         game_view = GameView()
+        # game_view.setup()
         self.window.show_view(game_view)
 
 class GameView(arcade.View):
@@ -57,6 +59,7 @@ class GameView(arcade.View):
         super().__init__()
 
         self.physics_engine = None
+        
         self.player = None
         self.scene = None
         self.tile_map = None
@@ -80,9 +83,13 @@ class GameView(arcade.View):
         self.zombie_damage = False
 
     def setup(self):
-
+        print("start_setup")
         # cцена и карта
-        tmx_map = "../resources/map/final_map.tmx"
+        tmx_map = os.path.join(os.path.dirname(os.path.abspath(os.getcwd())),"resources","map","final_map.tmx")
+        # tmx_map = "../resources/map/final_map.tmx"
+        # print(s)
+
+
         
         layer_options = {
             "Walls": {
@@ -149,12 +156,15 @@ class GameView(arcade.View):
 
     def on_show_view(self):
         self.setup()
+        
+        
 
 
     def on_draw(self):
         """
         отрисовка экрана
         """
+
         self.clear()
 
         
@@ -210,7 +220,7 @@ class GameView(arcade.View):
             - переключение виды оружия/покупка оружия
             - изменение скорости спавна зомби
         """
-        
+
         self.physics_engine.update()
 
 
@@ -241,7 +251,7 @@ class GameView(arcade.View):
 
             # delete зомби если мало здоровья
             if zombie.health <=0:
-                self.player.money += 20
+                self.player.money += settings.POINTS
                 zombie.remove_from_sprite_lists()
         
 
@@ -290,7 +300,7 @@ class GameView(arcade.View):
             self.dmg_text = "+20 HEALTH"
 
         # у игркова больше 200 монет == он выиграл
-        if self.player.money >= 200:
+        if self.player.money >= settings.END_MONEY:
             game_win = GameOverView("win")
             self.window.show_view(game_win)
             return
@@ -299,19 +309,25 @@ class GameView(arcade.View):
         if self.player.health <=0:
             game_over = GameOverView("lose")
             self.window.show_view(game_over)
-            pass
+            
 
 
         # переключение волн и спавн
         if self.enemy_amount == 0:
-            new_wave = self.current_wave + 1
-            self.current_wave = new_wave if settings.WAVE_LIST.get(new_wave) else 0
-            if self.current_wave == 0:
-                game_over = GameOverView("lose")
+            if self.current_wave != 0:
+                new_wave = self.current_wave + 1
+                self.current_wave = new_wave if settings.WAVE_LIST.get(new_wave) else 0
+            
+            if self.current_wave == 0 and len(self.scene["Zombie"]) <=0:
+                game_over = GameOverView("win")
                 self.window.show_view(game_over)
                 return
-            self.enemy_amount = settings.WAVE_LIST[self.current_wave]["weak"]
-            self.spawn_points = settings.WAVE_LIST[self.current_wave]["spawn"]
+            
+            if self.current_wave != 0:
+                self.enemy_amount = settings.WAVE_LIST[self.current_wave]["weak"]
+                self.spawn_points = self.scene.get_sprite_list(settings.WAVE_LIST[self.current_wave]["spawn"])
+            
+      
         else:
             if self.check_spawn_time >= 4:
                 self.enemy_amount -=1

@@ -3,20 +3,21 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "",
+    "activeFile": "final_map.tmx",
     "expandedProjectPaths": [
+        "."
     ],
     "fileStates": {
         "apocalypse_2.tsx": {
-            "scaleInDock": 1,
+            "scaleInDock": 0.5,
             "scaleInEditor": 1
         },
         "final_map.tmx": {
-            "scale": 0.75,
-            "selectedLayer": 4,
+            "scale": 0.33,
+            "selectedLayer": 6,
             "viewCenter": {
-                "x": 384.66666666666663,
-                "y": 2316
+                "x": 13.636363636363626,
+                "y": 2278.787878787879
             }
         },
         "map1.tmx": {
@@ -36,7 +37,7 @@
             }
         },
         "urban2.tsx": {
-            "scaleInDock": 1,
+            "scaleInDock": 0.5,
             "scaleInEditor": 1
         },
         "wall.tsx": {
@@ -49,6 +50,7 @@
     "map.lastUsedFormat": "tmx",
     "map.width": 22,
     "openFiles": [
+        "final_map.tmx"
     ],
     "project": "untitled.tiled-project",
     "recentFiles": [
