@@ -87,9 +87,6 @@ class GameView(arcade.View):
         # cцена и карта
         tmx_map = os.path.join(os.path.dirname(os.path.abspath(os.getcwd())),"resources","map","final_map.tmx")
         # tmx_map = "../resources/map/final_map.tmx"
-        # print(s)
-
-
         
         layer_options = {
             "Walls": {
@@ -120,7 +117,6 @@ class GameView(arcade.View):
         
         self.scene.add_sprite("Player", self.player)
 
-
         # спрайт противников
         self.enemy_amount = settings.WAVE_LIST[self.current_wave]["weak"]
         self.spawn_points = self.scene.get_sprite_list(settings.WAVE_LIST[self.current_wave]["spawn"])
@@ -132,7 +128,7 @@ class GameView(arcade.View):
 
         self.gui_camera = arcade.Camera(settings.SCREEN_WIDTH, settings.SCREEN_HEIGHT)
 
-        
+
 
         # ядро физики
         if self.tile_map.background_color:
@@ -166,8 +162,6 @@ class GameView(arcade.View):
         """
 
         self.clear()
-
-        
         self.camera.use()
         self.scene.draw()
         # self.gui_camera.use()
@@ -223,7 +217,6 @@ class GameView(arcade.View):
 
         self.physics_engine.update()
 
-
         if self.shoot_pressed:
             if self.can_shoot:
                 self._make_bullet()
@@ -237,7 +230,6 @@ class GameView(arcade.View):
         for bullet in self.scene["Bullet"]:
             self._check_bullet_coll(bullet)
 
-
         # идем по вем зомби и смотрим 
         for zombie in self.scene["Zombie"]:
             # идем к игроку
@@ -245,8 +237,6 @@ class GameView(arcade.View):
             # проеврка колизии с пулей
             self._check_zombie_bullet_coll(zombie,self.player.damage)
             # проверка колизии с игроком
-            
-
             
 
             # delete зомби если мало здоровья
@@ -273,7 +263,6 @@ class GameView(arcade.View):
             self.dmg_text_player = ""
             self.check_damage_time_zombie = 10
 
-
         #смертельная зоны чек
         check = arcade.check_for_collision_with_list(
             self.player, self.scene["death"]
@@ -292,7 +281,6 @@ class GameView(arcade.View):
             self.dmg_text = ""
             self.check_time = 6
 
-
         # у игрока мало здоровья, но есть деньги == +20здоровья
         if self.player.health >0 and self.player.health<30 and self.player.money>=10:
             self.player.health += 20
@@ -309,8 +297,6 @@ class GameView(arcade.View):
         if self.player.health <=0:
             game_over = GameOverView("lose")
             self.window.show_view(game_over)
-            
-
 
         # переключение волн и спавн
         if self.enemy_amount == 0:
@@ -336,10 +322,6 @@ class GameView(arcade.View):
             else:
                 self.check_spawn_time += delta_time
 
-
-
-        
-        
         self.center_camera_to_player()
 
         self.scene.update()
@@ -437,16 +419,11 @@ class GameView(arcade.View):
 
                 ],
             )
-        
         if hit_list:
             for hit in hit_list:
                 if type(hit) == Zombie:
                     hit.health -= self.player.damage
             bullet.remove_from_sprite_lists()
-
-
-
-
 
 
 class GameOverView(arcade.View):
