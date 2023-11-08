@@ -28,12 +28,12 @@ WEAPON_LIST = {
     }
 WAVE_LIST= {
         1: {
-            "weak": 2,
+            "weak": 10,
             "strong":1,
             "spawn" : "spawn1"
         },
         2: {
-            "weak": 4,
+            "weak": 12,
             "strong":8,
             "spawn" : "spawn2"
         },
