@@ -67,29 +67,3 @@ class Zombie(Entity):
             self.change_y = -self.mv_speed
         else:
             self.change_y = 0
-
-
-# class Wave():
-#     WAVE_LIST = []
-
-#     def __init__(self,current_wave,points,enemy) -> None:
-#         self.points = points
-#         self.wave_num = self._set_wave(num)
-
-#     def _set_wave(self,wave):
-#         self.wave = wave
-#         self.change_wave()
-
-#     def _set_enemy_amount(self,wave):
-#         self.enemy_amount = get_enemy_amount
-        
-    
-#     def __get_enemy_amount():
-#         return sum([i["weak"] for _, i in  self.WAVE_LIST.items()])
-
-
-#     def __change_wave(self):
-#         pass
-
-
-    

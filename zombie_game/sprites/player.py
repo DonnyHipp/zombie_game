@@ -5,11 +5,13 @@ from .entity import Entity
 
 
 
+
+
+
 class Player(Entity):
     
     
     def __init__(self,center_x,center_y,scale,weapon):
-
         super().__init__()
         base_dir = os.path.dirname(os.path.abspath(os.getcwd()))
         # self.main_path = "../resources/Player/player"

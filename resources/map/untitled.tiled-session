@@ -3,21 +3,21 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "final_map.tmx",
+    "activeFile": "test.tsx",
     "expandedProjectPaths": [
         "."
     ],
     "fileStates": {
         "apocalypse_2.tsx": {
-            "scaleInDock": 0.5,
+            "scaleInDock": 1.56,
             "scaleInEditor": 1
         },
         "final_map.tmx": {
-            "scale": 0.33,
-            "selectedLayer": 6,
+            "scale": 1.15,
+            "selectedLayer": 2,
             "viewCenter": {
-                "x": 13.636363636363626,
-                "y": 2278.787878787879
+                "x": 474.34782608695656,
+                "y": 1593.4782608695655
             }
         },
         "map1.tmx": {
@@ -36,8 +36,12 @@
                 "y": 483.33333333333326
             }
         },
+        "test.tsx": {
+            "scaleInDock": 1.56,
+            "scaleInEditor": 1
+        },
         "urban2.tsx": {
-            "scaleInDock": 0.5,
+            "scaleInDock": 1.56,
             "scaleInEditor": 1
         },
         "wall.tsx": {
@@ -50,11 +54,13 @@
     "map.lastUsedFormat": "tmx",
     "map.width": 22,
     "openFiles": [
-        "final_map.tmx"
+        "final_map.tmx",
+        "test.tsx"
     ],
     "project": "untitled.tiled-project",
     "recentFiles": [
         "final_map.tmx",
+        "test.tsx",
         "urban2.tsx",
         "apocalypse_2.tsx",
         "map2.tmj",
@@ -63,7 +69,7 @@
     ],
     "tileset.lastUsedFormat": "tsx",
     "tileset.tileSize": {
-        "height": 16,
-        "width": 16
+        "height": 30,
+        "width": 30
     }
 }

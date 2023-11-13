@@ -47,7 +47,7 @@ class MainMenu(arcade.View):
 
     def on_mouse_press(self, _x, _y, _button, _modifiers):
         game_view = GameView()
-        # game_view.setup()
+
         self.window.show_view(game_view)
 
 class GameView(arcade.View):
@@ -85,10 +85,9 @@ class GameView(arcade.View):
     def setup(self):
         print("start_setup")
         # cцена и карта
-        tmx_map = os.path.join(os.path.dirname(os.path.abspath(os.getcwd())),"resources","map","final_map.tmx")
+        base_dir = os.path.dirname(os.path.abspath(os.getcwd()))
+        tmx_map = os.path.join(base_dir,"resources","map","final_map.tmx")
         # tmx_map = "../resources/map/final_map.tmx"
-        # print(s)
-
 
         
         layer_options = {
@@ -113,7 +112,9 @@ class GameView(arcade.View):
         }
         self.tile_map = arcade.tilemap.TileMap(map_file=tmx_map, scaling=1,layer_options=layer_options)
         
+        #создание сцены? для удобства разработки
         self.scene = arcade.Scene.from_tilemap(self.tile_map)
+
 
         # спрайт игрока
         self.player = Player(300,300,1,"AR")

@@ -13,6 +13,7 @@ class Entity(arcade.Sprite):
         self.health = 100
         self.mv_speed = 1.4
         self.walk_textures = None
+        
         self.front_direction = 0
         self.back_direction = 1
         self.left_direction = 2
@@ -35,6 +36,10 @@ class Entity(arcade.Sprite):
             walk_textures.append(texture)
         return walk_textures
     
+
+    # a = [[l0,l0,l0,idle0,idl0,idl0,r0,r0,r0,idle0,idle0,idle0],[l0,l0,l0,idle0,idl0,idl0,r0,r0,r0,idle0,idle0,idle0],[l0,l0,l0,idle0,idl0,idl0,r0,r0,r0,idle0,idle0,idle0],[l0,l0,l0,idle0,idl0,idl0,r0,r0,r0,idle0,idle0,idle0]]
+
+
     def load_texture_set(self,i):
         res = [arcade.load_texture(f"{self.main_path}_lstep_{i}.png")] * self.update_per_frame + [arcade.load_texture(f"{self.main_path}_idle_{i}.png")] * self.update_per_frame + [arcade.load_texture(f"{self.main_path}_rstep_{i}.png")] * self.update_per_frame + [arcade.load_texture(f"{self.main_path}_idle_{i}.png")] * self.update_per_frame 
 
