@@ -466,7 +466,7 @@ class GameOverView(arcade.View):
         """Draw the game overview"""
         self.clear()
         if self.end_type == "win":
-            end_text = "Ты выйграл!"
+            end_text = "Ты выиграл!"
         else:
             end_text = "Ты проиграл"
         arcade.draw_text(
