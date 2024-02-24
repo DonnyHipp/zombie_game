@@ -1,21 +1,15 @@
 import os
-import arcade
+
 import settings
+
 from .entity import Entity
 
 
-
-
-
-
 class Player(Entity):
-    
-    
-    def __init__(self,center_x,center_y,scale,weapon):
+    def __init__(self, center_x, center_y, scale, weapon):
         super().__init__()
         base_dir = os.path.dirname(os.path.abspath(os.getcwd()))
-        # self.main_path = "../resources/Player/player"
-        self.main_path = os.path.join(base_dir,"resources","Player","player")
+        self.main_path = os.path.join(base_dir, "resources", "Player", "player")
         self.damage = settings.PLAYER_DAMAGE
         self.center_x = center_x
         self.center_y = center_y
@@ -32,13 +26,10 @@ class Player(Entity):
         self.walk_textures = self._get_textures()
         self.set_hit_box(self.texture.hit_box_points)
 
-
-    def change_weapon(self,weapon):
+    def change_weapon(self, weapon):
         if weapon not in settings.WEAPON_LIST:
             self.weapon = "AR"
         else:
             self.weapon = weapon
         self.shoot_speed = settings.WEAPON_LIST[self.weapon]["speed"]
-        self.bulbreak =  settings.WEAPON_LIST[self.weapon]["bullet_break"]
-        # Handles the player textures.
-       
+        self.bulbreak = settings.WEAPON_LIST[self.weapon]["bullet_break"]
