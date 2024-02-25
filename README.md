@@ -15,22 +15,22 @@ Pygame
 
 Скачайте код из GitHub:
 
-'''
+```
 git clone https://github.com/DonnyHipp/zombie_game.git
-'''
+```
 
 Перейдите в папку проекта:
-'''
+```
 cd zombie_game
-'''
+```
 Установите зависимости:
-'''
+```
 poetry install
-'''
+```
 Запустите игру:
-'''
+```
 poetry run python main.py
-'''
+```
 
 ## Управление:
 
