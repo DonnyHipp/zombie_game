@@ -8,7 +8,8 @@
 
 Python 3
 Poetry
-Pygame
+PythonArcade
+
 Установка:
 
 ## Установка
