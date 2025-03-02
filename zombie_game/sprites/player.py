@@ -16,10 +16,8 @@ class Player(Entity):
         self.scale = scale
         self.money = 20
         self.weapon = weapon
-
         self.shoot_speed = None
         self.bulbreak = None
-
         self.change_weapon(weapon)
         self.idle_texture = self._set_idle()
         self.texture = self.idle_texture[0]
